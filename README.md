@@ -1,68 +1,135 @@
-OpenCV Vision Sandbox
+# Real-Time Red Object Tracker
 
-Small computer vision experiments with Python and OpenCV.
+A webcam-based computer vision application that detects, tracks, and predicts the movement of red objects in real time.
 
-This repository contains my early experiments with webcam-based computer vision: color detection, object tracking, movement visualization, and simple interaction using live camera input.
+## Overview
 
-Current Project: Red Object Tracker
+This portfolio project demonstrates practical Python automation and computer vision skills. It processes live webcam frames, isolates red pixels in HSV color space, tracks the largest matching object, and overlays diagnostics such as position, direction, speed, trajectory, and tracking state.
 
-The current script detects a red object through the webcam, finds its center, and tracks its movement on screen.
+The project is intentionally compact: the tracking pipeline is contained in one readable script and uses only OpenCV and NumPy.
 
-The goal of this project is to understand the basic computer vision pipeline:
+## Features
 
-Capture video from a webcam
-Convert the image from BGR to HSV color space
-Create a mask for red color detection
-Find contours of detected objects
-Calculate the center of the object
-Track its movement between frames
-Draw visual feedback on the screen
-Features
-Webcam input using OpenCV
-Red color detection with HSV masks
-Contour detection
-Object center calculation
-Basic object tracking
-Movement visualization
-Real-time video processing
-Tech Stack
-Python
-OpenCV
-NumPy
-Project Structure
-opencv-vision-sandbox/
-│
-├── red_object_tracker.py
-├── requirements.txt
-├── README.md
-├── LICENSE
-└── .gitignore
-Installation
+- Real-time webcam capture and processing
+- Red-object segmentation using two HSV ranges
+- Noise reduction with Gaussian blur and morphological filtering
+- Largest-contour selection with a minimum area threshold
+- Bounding box and center-point visualization
+- Direction and speed estimation
+- Short-term position prediction
+- Recent movement trajectory
+- Smoothed aim indicator and horizontal control guidance
+- Tracking states: searching, tracking, holding, and lost
+- Live FPS, contour area, and object-status diagnostics
 
-Clone the repository:
+## Tech Stack
 
-git clone https://github.com/lumenteb/opencv-vision-sandbox.git
+- Python 3.10+
+- OpenCV
+- NumPy
 
-Go into the project folder:
+## How It Works
 
-cd opencv-vision-sandbox
+1. OpenCV reads frames from the default webcam.
+2. Each frame is blurred and converted from BGR to HSV.
+3. Two HSV ranges are combined to cover red at both ends of the hue scale.
+4. Morphological opening and closing reduce noise in the binary mask.
+5. The largest contour above the area threshold is treated as the target.
+6. The program calculates its center, movement, speed, and predicted position.
+7. Tracking data and visual guides are drawn on the live video.
+8. If detection briefly drops, the tracker holds the last known position before marking the target as lost.
 
-Install dependencies:
+## Example Output
 
+The application opens two windows:
+
+- **Vision Sandbox** — live camera output with the bounding box, trajectory, aim marker, predicted position, and diagnostics
+- **Mask** — the binary image used to isolate red pixels
+
+Portfolio screenshots or a short demo GIF can be placed in [`examples/media`](examples/media). See [`examples/README.md`](examples/README.md) for safe capture guidance.
+
+## How to Run
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd red-object-tracker
+```
+
+### 2. Create and activate a virtual environment
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS or Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-Run
+```
 
-Run the tracker:
+### 4. Start the tracker
 
-python red_object_tracker.py
+```bash
+python main.py
+```
 
-A webcam window should open. Show a red object in front of the camera, and the program should detect and track it.
+Hold a red object in view of the default webcam. Press **Q** while an application window is active to exit.
 
-Requirements
+### Troubleshooting
 
-The project uses:
+- Confirm that a webcam is connected and not being used by another application.
+- Allow camera access when requested by the operating system.
+- Use even lighting and a clearly red target for more reliable detection.
+- Adjust the HSV limits or `min_area` only when adapting the tracker to a different environment.
 
-opencv-python
-numpy
+## Project Structure
 
-These dependencies are listed in requirements.txt.
+```text
+red-object-tracker/
+├── examples/
+│   ├── media/
+│   │   └── .gitkeep
+│   └── README.md
+├── .gitignore
+├── main.py
+├── README.md
+└── requirements.txt
+```
+
+## What I Learned
+
+- Applying HSV color segmentation to a live camera stream
+- Reducing false detections with blur and morphological operations
+- Using contours to locate and measure objects
+- Estimating motion from changes between video frames
+- Designing simple tracking states for temporary detection loss
+- Presenting live diagnostic information for testing and debugging
+- Keeping a small Python project reproducible and portfolio-ready
+
+From a QA and automation perspective, this project also reinforced the value of observable state, repeatable setup steps, clear failure messages, and testing small calculations separately from hardware-dependent behavior.
+
+## Future Improvements
+
+- Add command-line options for camera index, minimum area, and HSV thresholds
+- Add unit tests for calculation and state-transition helpers
+- Support recorded video input for repeatable regression testing
+- Save optional annotated recordings or screenshots
+- Add configurable tracking profiles for other colors
+- Compare detection results across different lighting conditions
+
+## Project Status
+
+**Working prototype.** Core real-time detection and tracking features are implemented. A webcam is required for the full interactive demo.
